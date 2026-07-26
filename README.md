@@ -1,5 +1,7 @@
 # Coiffure 3 — prospect sample site
 
+**Live:** https://prxweb.github.io/coiffure3/ — GitHub Pages, `main` branch root.
+
 Personalized cold-outreach **design preview** for **Coiffure 3**, a hair salon at
 5702 Sherbrooke St W in Notre-Dame-de-Grâce, Montreal.
 
