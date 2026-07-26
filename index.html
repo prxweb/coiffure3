@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Coiffure 3 — Hair Salon · NDG, Montreal</title>
+<meta name="description" content="Coiffure 3 is a full-service hair salon on Sherbrooke West in Notre-Dame-de-Grâce, Montreal. Cuts, colour, balayage, blow-dries, updos and treatments. Call 514-489-7979 to book." />
+
+<!-- Tailwind (per project defaults) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts: high-contrast Garamond (echoes the serif in the logo) + geometric sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    /* ============================================================
+       THEME TOKENS — everything reskinnable lives in this block.
+       Coiffure 3 · NDG, Montreal.
+       The supplied logo is pure black ink on transparency, so no palette
+       could be sampled from it. This family was derived to complement it:
+       espresso near-black, warm bone paper, rose-clay accent, brass trim.
+       ============================================================ */
+
+    /* Primary dark brand family (nav, dark sections, footer) */
+    --brand-900:#14100f;   /* deepest — footer, nav scrim */
+    --brand-800:#221c1a;   /* primary brand colour */
+    --brand-700:#312926;
+    --brand-600:#463b36;
+
+    /* Light "paper" family (page background, alternating sections) */
+    --paper:#f7f3ec;       /* page base */
+    --paper-lt:#efe8dd;    /* alternating section background */
+    --paper-dk:#e3d9c9;    /* hairlines / deeper wash */
+
+    /* Accent — CTAs, eyebrows, ribbon stripe */
+    --accent:#9e5a63;
+    --accent-deep:#83454e; /* hover / pressed */
+
+    /* Secondary metallic trim — hairlines, underlines, focus rings */
+    --trim:#c2a05c;
+
+    /* Text */
+    --ink:#1e1a18;         /* body text on paper */
+    --muted:#6b615a;       /* secondary text on paper */
+    --on-dark:#f7f3ec;     /* text on brand surfaces */
+    --on-dark-mut:rgba(247,243,236,.9);
+
+    /* Fonts — pair with the Google Fonts <link> in <head> */
+    --font-script:"Cormorant Garamond",Georgia,serif;      /* italic accents */
+    --font-display:"Cormorant Garamond",Georgia,serif;     /* headings */
+    --font-body:"Jost",system-ui,-apple-system,"Segoe UI",sans-serif;
+
+    /* Optical correction for logo.png — the file carries uneven transparent
+       padding (ink bbox 527x347 at 19,27 within 605x394). This nudge centres
+       the INK inside its container. The file itself is never modified. */
+    --logo-nudge:translate(3.39%,-0.76%);
+
+    /* Spacing scale */
+    --s-1:.5rem; --s-2:1rem; --s-3:1.5rem; --s-4:2rem;
+    --s-6:3rem;  --s-8:4.5rem; --s-10:6rem; --s-12:8rem;
+
+    --maxw:1160px;
+
+    /* Layered, colour-tinted shadows (rgb ≈ a very dark --brand-900) */
+    --shadow-sm:0 1px 2px rgba(20,16,15,.10), 0 4px 14px -6px rgba(20,16,15,.18);
+    --shadow-md:0 6px 22px -10px rgba(20,16,15,.35), 0 22px 48px -24px rgba(20,16,15,.40);
+    --shadow-accent:0 10px 26px -12px rgba(131,69,78,.55);
+
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-weight:400;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* faint film grain for depth */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- type roles ---------- */
+  .script{font-family:var(--font-script);font-style:italic;font-weight:400;line-height:.9}
+  .display{font-family:var(--font-display);font-optical-sizing:auto}
+  .eyebrow{
+    font-family:var(--font-body);
+    font-size:.72rem; font-weight:600;
+    text-transform:uppercase; letter-spacing:.28em;
+    color:var(--accent);
+  }
+  /* over photography the brass eyebrow needs its own shadow to hold up */
+  .eyebrow.on-dark{color:var(--trim);text-shadow:0 2px 12px rgba(0,0,0,.7), 0 1px 3px rgba(0,0,0,.5)}
+
+  h1,h2,h3{margin:0}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:clamp(1.25rem,5vw,2.5rem)}
+  .section{padding-block:clamp(3.5rem,9vw,var(--s-10))}
+
+  /* signature: diagonal ribbon stripe (rose-clay / brass / bone) */
+  .pole{
+    width:8px; border-radius:6px;
+    background:repeating-linear-gradient(
+      -45deg,
+      var(--accent) 0 8px,
+      var(--paper) 8px 16px,
+      var(--trim) 16px 24px,
+      var(--paper) 24px 32px
+    );
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.14), var(--shadow-sm);
+  }
+  .pole-rule{
+    height:5px; width:100%; border-radius:6px;
+    background:repeating-linear-gradient(
+      -45deg,
+      var(--accent) 0 9px,
+      var(--paper-lt) 9px 18px,
+      var(--trim) 18px 27px,
+      var(--paper-lt) 27px 36px
+    );
+    opacity:.9;
+  }
+
+  /* ---------- logo lockups ----------
+     The logo FILE is still used exactly as supplied and is never modified on disk.
+     It is black ink on transparency, so `filter:invert(1)` renders it as white ink:
+     invert touches only the RGB channels, leaving the alpha (and therefore the
+     antialiased edges) intact. No knocked-out plate or derived variant needed.
+     --logo-nudge optically centres the ink, which sits off-centre in the file. */
+  .logo-white{filter:invert(1)}
+
+  .brand{display:flex;align-items:center;line-height:1}
+  /* Cross-fade with the hero mark (driven by syncBrand() in the script).
+     .brand-anim is added on the frame after the initial state is set, so the
+     first paint doesn't animate. visibility is transitioned alongside opacity so
+     the hidden logotype also leaves the tab order and the a11y tree. */
+  .brand.brand-anim{transition:opacity .5s var(--ease), visibility .5s var(--ease), transform .35s var(--ease)}
+  .brand.brand-hidden{opacity:0;visibility:hidden;pointer-events:none}
+  /* Sized by HEIGHT so the nav bar height barely moves: the nav's padding-block
+     was trimmed to .85rem to pay for the taller mark (≈81px total, was ≈82px). */
+  .brand img{
+    display:block;height:60px;width:auto;
+    transform:var(--logo-nudge);
+    /* the nav floats over photography — keep the white mark readable on bright frames */
+    filter:invert(1) drop-shadow(0 2px 10px rgba(0,0,0,.45));
+  }
+  .brand:hover{transform:translateY(-2px)}
+  .brand:focus-visible{outline:2px solid var(--trim);outline-offset:5px;border-radius:3px}
+
+  /* hero: large white mark at the top of the frame. Decorative repetition of the
+     nav logo, so it is aria-hidden and not a second link. Width is capped to stay
+     clear of the SAMPLE SITE stamp on the right and the headline below. */
+  .hero-logo{
+    position:absolute;z-index:3;pointer-events:none;
+    top:clamp(96px,12vh,150px);left:0;right:0;
+  }
+  /* The inner .wrap gives the mark the exact left gutter the headline uses.
+     translateX(-3.14%) then pulls the file's transparent left margin (19/605)
+     back out, so the INK edge — not the canvas edge — lines up with the text. */
+  .hero-logo img{
+    display:block;width:clamp(188px,22vw,224px);height:auto;
+    transform:translateX(-3.14%);
+    filter:invert(1) drop-shadow(0 12px 34px rgba(0,0,0,.5));
+  }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:.6rem;
+    font-family:var(--font-body);font-weight:600;
+    font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;
+    padding:.95rem 1.6rem;border-radius:2px;cursor:pointer;border:0;white-space:nowrap;
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease), background-color .35s var(--ease), color .35s var(--ease);
+  }
+  .btn-primary{background:var(--accent);color:var(--on-dark);box-shadow:var(--shadow-accent)}
+  .btn-primary:hover{transform:translateY(-3px);background:var(--accent-deep)}
+  .btn-primary:active{transform:translateY(-1px)}
+  .btn-ghost{background:transparent;color:var(--on-dark);box-shadow:inset 0 0 0 1px rgba(247,243,236,.5)}
+  .btn-ghost:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 1px var(--on-dark)}
+  .btn:focus-visible{outline:3px solid var(--trim);outline-offset:3px}
+  .btn .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.8}
+
+  /* ---------- nav ---------- */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    transition:background-color .4s var(--ease), box-shadow .4s var(--ease), padding .4s var(--ease);
+    padding-block:.85rem;
+  }
+  header.nav.scrolled{
+    background:rgba(20,16,15,.78);
+    box-shadow:0 10px 30px -18px rgba(0,0,0,.5);
+    backdrop-filter:blur(8px);
+    padding-block:.5rem;
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .nav-links{display:flex;align-items:center;gap:2rem}
+  .nav-link{
+    font-size:.74rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--on-dark);position:relative;padding-block:.3rem;
+    transition:color .3s var(--ease);
+  }
+  .nav-link::after{
+    content:"";position:absolute;left:0;bottom:0;height:1.5px;width:100%;
+    background:var(--trim);transform:scaleX(0);transform-origin:left;
+    transition:transform .35s var(--ease);
+  }
+  .nav-link:hover{color:#fff}
+  .nav-link:hover::after{transform:scaleX(1)}
+  .nav-link:focus-visible{outline:2px solid var(--trim);outline-offset:4px}
+  .lang{
+    display:inline-flex;align-items:center;gap:.4rem;
+    font-size:.72rem;font-weight:600;letter-spacing:.14em;
+    color:var(--on-dark);background:transparent;border:1px solid rgba(247,243,236,.4);
+    padding:.42rem .7rem;border-radius:2px;cursor:pointer;
+    transition:transform .3s var(--ease), border-color .3s var(--ease), background-color .3s var(--ease);
+  }
+  .lang:hover{transform:translateY(-2px);border-color:var(--trim);background:rgba(194,160,92,.16)}
+  .lang:focus-visible{outline:2px solid var(--trim);outline-offset:3px}
+  .nav-actions{display:flex;align-items:center;gap:1rem}
+  .mobile-only{display:none}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden}
+  .hero-img{position:absolute;inset:0;z-index:0}
+  .hero-img img{width:100%;height:100%;object-fit:cover}
+  .hero-img::after{ /* neutral darken for text legibility — no colour tint.
+    The 90deg layer is a side scrim over the text column only, so the hands and
+    hair on the right stay bright while the headline keeps its contrast. */
+    content:"";position:absolute;inset:0;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.64) 0%, rgba(0,0,0,.36) 34%, rgba(0,0,0,.08) 62%, transparent 78%),
+      radial-gradient(120% 90% at 72% 8%, rgba(0,0,0,.14), transparent 58%),
+      linear-gradient(180deg, rgba(0,0,0,.50) 0%, rgba(0,0,0,.26) 30%, rgba(0,0,0,.52) 66%, rgba(0,0,0,.88) 100%);
+  }
+  .hero-content{position:relative;z-index:2;color:var(--on-dark);width:100%;padding-bottom:clamp(3rem,8vw,6rem)}
+  .hero-eyebrow{display:flex;align-items:center;gap:.85rem;margin-bottom:1.4rem}
+  .hero-eyebrow .line{height:1px;width:46px;background:var(--trim);box-shadow:0 1px 5px rgba(0,0,0,.55)}
+  .hero h1{font-weight:500;letter-spacing:0}
+  .hero .l1,.hero .l3{
+    display:block;font-family:var(--font-display);text-transform:uppercase;
+    font-size:clamp(3.1rem,11vw,7.4rem);line-height:.92;font-weight:600;
+    letter-spacing:.015em;
+  }
+  .hero .l2{
+    display:block;font-family:var(--font-script);font-style:italic;color:var(--trim);
+    font-size:clamp(3rem,11vw,7rem);line-height:.9;margin:.06em 0 .02em;
+    font-weight:400;letter-spacing:0;
+  }
+  .hero-sub{max-width:34rem;margin-top:1.6rem;font-size:1.05rem;color:var(--on-dark-mut)}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:2rem}
+
+  /* PROSPECT SAMPLE MODE — distressed "SAMPLE SITE" rubber stamp (hero only).
+     Remove this rule + the .stamp element in <body> for a Client Mode build. */
+  .stamp{
+    position:absolute;top:clamp(90px,13vh,146px);right:clamp(18px,4.5vw,68px);
+    z-index:4;pointer-events:none;transform:rotate(-14deg);
+    /* accent-deep, not accent: this hero photo is bright and the lighter rose
+       disappeared against it */
+    color:var(--accent-deep);border:4px solid var(--accent-deep);border-radius:12px;
+    padding:.74rem 1.75rem .84rem;text-align:center;
+    font-family:var(--font-body);font-weight:700;
+    font-size:clamp(1.6rem,3.7vw,2.4rem);line-height:1.02;
+    text-transform:uppercase;letter-spacing:.16em;opacity:.95;
+    text-shadow:0 1px 5px rgba(0,0,0,.38);
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='170'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' seed='6' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1 1 1 1 1 1 0 1 1 1 1 0 1 1 1'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix type='matrix' values='0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='170'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' seed='6' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='1 1 1 1 1 1 0 1 1 1 1 0 1 1 1'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix type='matrix' values='0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E");
+    -webkit-mask-size:100% 100%;mask-size:100% 100%;
+  }
+  .stamp::before{content:"";position:absolute;inset:5px;border:2px solid var(--accent-deep);border-radius:8px}
+  @media (max-width:760px){
+    .stamp{font-size:1.2rem;top:74px;right:14px;padding:.55rem 1.05rem .62rem;letter-spacing:.14em}
+  }
+
+  .scroll-cue{
+    position:absolute;right:clamp(1.25rem,5vw,2.5rem);bottom:2rem;z-index:2;
+    color:var(--on-dark);font-size:.64rem;letter-spacing:.3em;text-transform:uppercase;
+    writing-mode:vertical-rl;display:flex;align-items:center;gap:.8rem;opacity:.8;
+  }
+  .scroll-cue .ln{height:52px;width:1px;background:linear-gradient(var(--trim),transparent)}
+
+  /* ---------- intro ----------
+     Deliberately slimmer than the other sections: it is a short bridge between
+     the hero and the info strip, not a full band. */
+  .section.intro{padding-block:clamp(2.4rem,5.5vw,3.6rem)}
+  .intro{background:var(--paper);text-align:center}
+  .intro .inner{max-width:44rem;margin:0 auto}
+  .intro h2{
+    font-family:var(--font-display);font-weight:500;letter-spacing:-.015em;
+    font-size:clamp(1.9rem,4.4vw,3rem);line-height:1.12;margin:.85rem 0 1rem;color:var(--brand-900);
+  }
+  .intro p{color:var(--muted);font-size:1.08rem}
+  .intro .btn{margin-top:1.5rem}
+  .intro .pole-wrap{display:flex;justify-content:center;margin-top:1.85rem}
+  .intro .pole-rule{max-width:120px}
+
+  /* ---------- contact primitives ----------
+     Phone / hours / address / map all live in the footer — there is deliberately
+     no separate mid-page info band. */
+  .addr{white-space:nowrap}
+
+  /* day-by-day hours (real hours supplied by the client) */
+  .hours{margin:0;display:grid;gap:.36rem}
+  .hours>div{display:flex;align-items:baseline;justify-content:space-between;gap:.9rem}
+  .hours dt{color:var(--on-dark-mut);font-size:.92rem;white-space:nowrap}
+  .hours dd{margin:0;color:var(--on-dark);font-size:.92rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .hours dd.closed{color:var(--trim);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase}
+
+  /* ---------- full-bleed image bands ---------- */
+  .band{position:relative;height:clamp(320px,52vw,560px);overflow:hidden}
+  .band img{width:100%;height:100%;object-fit:cover}
+  .band::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(75% 120% at 50% 50%, rgba(0,0,0,.46), rgba(0,0,0,.10))}
+  .band-quote{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem}
+  .band-quote .script{color:var(--on-dark);font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.05;text-shadow:0 12px 40px rgba(0,0,0,.45)}
+
+  /* ---------- services ---------- */
+  .services{background:var(--paper-lt)}
+  .services .head{text-align:center;max-width:40rem;margin:0 auto clamp(2.2rem,5vw,3.4rem)}
+  .services .head h2{font-family:var(--font-display);font-weight:500;font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.015em;color:var(--brand-900);margin-top:.9rem}
+  .menu{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(2rem,6vw,5rem)}
+  .item{
+    display:flex;flex-direction:column;gap:.35rem;
+    padding:1.5rem 0;border-bottom:1px solid rgba(107,97,90,.24);
+  }
+  .item .row{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+  .item h3{font-family:var(--font-display);font-weight:600;font-size:1.34rem;color:var(--brand-900)}
+  .item .tag{font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600;white-space:nowrap}
+  .item p{color:var(--muted);font-size:.96rem;line-height:1.55}
+  .menu-note{text-align:center;color:var(--muted);font-size:.9rem;margin-top:2.2rem;font-style:italic}
+
+  /* ---------- experience / three pillars ---------- */
+  .exp{background:var(--paper)}
+  .exp .head{max-width:42rem;margin:0 auto clamp(2.4rem,5vw,3.6rem);text-align:center}
+  .exp .head h2{font-family:var(--font-display);font-weight:500;font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.015em;color:var(--brand-900);margin-top:.9rem}
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3vw,2.2rem)}
+  .pillar{
+    background:#fff;border-radius:4px;overflow:hidden;
+    box-shadow:var(--shadow-sm);
+    transition:transform .45s var(--ease), box-shadow .45s var(--ease);
+    display:flex;flex-direction:column;
+  }
+  .pillar:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+  .pillar .ph{position:relative;aspect-ratio:4/3;overflow:hidden}
+  .pillar .ph img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+  .pillar:hover .ph img{transform:scale(1.06)}
+  .pillar .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.5));}
+  .pillar .ph .num{position:absolute;top:.9rem;left:1rem;z-index:2;font-family:var(--font-display);font-style:italic;color:var(--on-dark);font-size:1.15rem;opacity:.9}
+  .pillar .body{padding:1.5rem 1.5rem 1.9rem}
+  .pillar h3{font-family:var(--font-display);font-weight:600;font-size:1.44rem;color:var(--brand-900);margin-bottom:.6rem}
+  .pillar p{color:var(--muted);font-size:.98rem}
+
+  /* ---------- footer ---------- */
+  footer.ft{background:var(--brand-900);color:var(--on-dark);position:relative;overflow:hidden}
+  footer.ft .pole-rule{opacity:.85}
+  /* This is the page's only contact block, so it carries everything the old
+     mid-page info strip did. Three columns rather than four: it keeps the map
+     wide enough to be readable and keeps the three column heights close, which
+     four columns did not (the brand column dwarfed the short link columns). */
+  .ft-top{display:grid;grid-template-columns:1.15fr 1.1fr .95fr;gap:clamp(1.75rem,3.6vw,3rem);align-items:start;padding-block:clamp(3rem,7vw,5rem)}
+  .ft .col h4.h4-sp{margin-top:2rem}
+  .ft-map{
+    position:relative;margin-top:1rem;border-radius:4px;overflow:hidden;
+    box-shadow:var(--shadow-md);border:1px solid rgba(194,160,92,.3);
+    min-height:200px;background:var(--brand-700);
+  }
+  .ft-map::before{content:"View map ↗";position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;color:var(--trim);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase}
+  .ft-map iframe{position:relative;z-index:1;display:block;width:100%;height:100%;min-height:200px;border:0;filter:grayscale(.35) sepia(.15)}
+  /* white ink straight onto the dark footer — no plate */
+  .ft .brandblock .ft-logo{display:block;width:clamp(196px,24vw,254px);height:auto;transform:var(--logo-nudge)}
+  .ft .brandblock .tag{margin-top:1.1rem;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--trim)}
+  .ft .brandblock p{margin-top:1.2rem;color:rgba(247,243,236,.7);max-width:26rem;font-size:.98rem}
+  .ft h4{font-family:var(--font-body);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--trim);margin-bottom:1rem}
+  .ft .col p, .ft .col a{color:rgba(247,243,236,.82);font-size:.98rem;display:block;margin-bottom:.55rem;transition:color .3s var(--ease)}
+  .ft .col a:hover{color:#fff}
+  .ft .col a:focus-visible{outline:2px solid var(--trim);outline-offset:3px;border-radius:2px}
+  .ft .btn{margin-top:.6rem}
+  .ft-bottom{
+    border-top:1px solid rgba(247,243,236,.14);
+    padding-block:1.6rem;display:flex;flex-wrap:wrap;gap:.6rem 1.5rem;
+    align-items:center;justify-content:space-between;
+    font-size:.78rem;color:rgba(247,243,236,.55);
+  }
+  .ft-bottom .preview{color:rgba(194,160,92,.85);letter-spacing:.04em}
+
+  /* ---------- scroll reveal ---------- */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.08s}
+  .reveal.d2{transition-delay:.16s}
+  .reveal.d3{transition-delay:.24s}
+
+  /* ---------- mobile nav ---------- */
+  .menu-btn{display:none;background:transparent;border:0;cursor:pointer;color:var(--on-dark);padding:.4rem}
+  .menu-btn span{display:block;width:24px;height:2px;background:currentColor;margin:5px 0;transition:transform .3s var(--ease),opacity .3s var(--ease)}
+  .menu-btn:focus-visible{outline:2px solid var(--trim);outline-offset:3px}
+
+  @media (max-width:900px){
+    .ft-top{grid-template-columns:1fr 1fr}
+    .ft .brandblock{grid-column:1/-1}
+  }
+  @media (max-width:760px){
+    .nav-links.desktop{
+      position:fixed;inset:0;top:0;z-index:90;
+      flex-direction:column;justify-content:center;gap:2rem;
+      background:rgba(20,16,15,.98);backdrop-filter:blur(6px);
+      transform:translateY(-100%);transition:transform .5s var(--ease);
+    }
+    .nav-links.desktop.open{transform:translateY(0)}
+    .nav-links.desktop .nav-link{font-size:1.1rem}
+    .menu-btn{display:block;z-index:95}
+    .menu-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .menu-btn.open span:nth-child(2){opacity:0}
+    .menu-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .menu{grid-template-columns:1fr;gap:0}
+    .pillars{grid-template-columns:1fr}
+    /* the scrolled nav's backdrop-filter would otherwise become the containing
+       block of the fixed mobile menu overlay — drop it at mobile widths */
+    header.nav.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none}
+    .brand img{height:44px}
+    .nav-actions{gap:.55rem}
+    .book-desktop{display:none}
+    .nav-links.desktop .mobile-only{display:block}
+    .ft-top{grid-template-columns:1fr}
+    /* single-column info strip: cap the list so the day and the time stay a
+       readable pair instead of spreading to opposite screen edges */
+    .hours{max-width:19rem}
+    .hours dt,.hours dd{font-size:.95rem}
+  }
+
+  /* portrait phones */
+  @media (orientation:portrait) and (max-width:767px){
+    .hero-actions{flex-direction:column;align-items:flex-start}
+    /* The mark joins the normal flow and the hero stacks from the top, so the
+       headline sits directly beneath it instead of being stranded at the bottom
+       of a 100svh frame. Width capped so it still clears the stamp on the right. */
+    .hero{flex-direction:column;justify-content:flex-start;align-items:stretch}
+    .hero-logo{position:static;padding-top:86px}
+    .hero-logo img{width:min(56vw,240px)}
+    .hero-content{padding-top:1.15rem;padding-bottom:2.5rem}
+    /* the type now lives at the TOP of the frame, so weight the scrim there
+       rather than at the base as the desktop gradient does */
+    .hero-img::after{
+      background:linear-gradient(180deg,
+        rgba(0,0,0,.74) 0%, rgba(0,0,0,.62) 38%,
+        rgba(0,0,0,.34) 66%, rgba(0,0,0,.54) 100%);
+    }
+  }
+  /* landscape phones (short viewport): keep hero text clear of the fixed nav AND
+     scale the display type down so the eyebrow, all three headline lines, the
+     subline and both CTAs fit inside a ~390px-tall viewport. At the full clamp
+     size the block ran ~595px and pushed the buttons below the fold. */
+  @media (orientation:landscape) and (max-height:640px){
+    .hero{align-items:flex-start}
+    .hero-content{padding-top:4.6rem;padding-bottom:1.6rem}
+    .brand img{height:38px}
+    /* the 390px-tall hero is fully budgeted by the headline block; the nav mark
+       already carries the brand here, so drop the hero repeat */
+    .hero-logo{display:none}
+    .hero-eyebrow{margin-bottom:.6rem}
+    .hero .l1,.hero .l3{font-size:clamp(1.9rem,4.6vw,2.6rem);line-height:.96}
+    .hero .l2{font-size:clamp(1.85rem,4.5vw,2.5rem);line-height:.95;margin:.04em 0 .02em}
+    .hero-sub{font-size:.88rem;line-height:1.5;margin-top:.7rem;max-width:28rem}
+    .hero-actions{margin-top:.9rem;gap:.7rem}
+    .hero-actions .btn{padding:.7rem 1.2rem;font-size:.74rem}
+    .scroll-cue{display:none}
+    /* 844x390 falls outside the 760px mobile stamp rule, so size it here too.
+       Anchored bottom-right rather than top-right: in this viewport the top-right
+       of the hero photo is its brightest patch and the stamp washed out there.
+       The scroll cue is hidden above, so nothing collides. */
+    .stamp{font-size:1.1rem;top:auto;bottom:16px;right:14px;padding:.48rem .95rem .54rem;letter-spacing:.13em}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .btn,.pillar,.nav-link::after,.pillar .ph img,.brand{transition:none}
+  }
+
+  /* ---------- PROSPECT SAMPLE MODE: disclaimer modal ----------
+     Required for cold-outreach samples. Delete this block + the #sampleModal
+     element + its <script> IIFE for a Client Mode build. */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:1000;
+    display:flex;align-items:safe center;justify-content:center;padding:1.5rem;
+    overflow-y:auto;
+    background:rgba(16,12,11,.74);backdrop-filter:blur(5px);
+    animation:overlayIn .35s var(--ease) both;
+  }
+  .modal-overlay[hidden]{display:none}
+  .modal-card{
+    position:relative;width:100%;max-width:30rem;
+    max-height:calc(100svh - 3rem);overflow-y:auto;
+    background:var(--paper);border-radius:8px;text-align:center;
+    padding:clamp(2rem,5vw,2.9rem);
+    border:1px solid rgba(194,160,92,.4);
+    box-shadow:0 34px 80px -22px rgba(16,12,11,.62), 0 12px 26px -14px rgba(16,12,11,.5);
+    animation:cardIn .45s var(--ease) both;
+  }
+  .modal-card .eyebrow{display:block;margin-bottom:.7rem}
+  .modal-title{font-family:var(--font-display);font-weight:600;letter-spacing:-.01em;color:var(--brand-900);font-size:clamp(1.55rem,4vw,2.05rem);line-height:1.1}
+  .modal-rule{max-width:96px;margin:1.05rem auto 1.25rem}
+  .modal-body{color:var(--muted);font-size:1rem;line-height:1.7}
+  .modal-body strong{color:var(--brand-900);font-weight:600}
+  .modal-cta{margin-top:1.45rem;font-size:.92rem;line-height:1.65;color:var(--muted)}
+  .modal-cta strong{display:block;margin-bottom:.2rem;color:var(--brand-900);font-weight:600;font-size:1rem;letter-spacing:-.005em}
+  .modal-cta a{color:var(--accent);text-decoration:none;white-space:nowrap;border-bottom:1px solid rgba(158,90,99,.35);transition:color .25s var(--ease),border-color .25s var(--ease)}
+  .modal-cta a:hover{color:var(--accent-deep);border-bottom-color:currentColor}
+  .modal-cta a:focus-visible{outline:2px solid var(--trim);outline-offset:2px;border-radius:2px}
+  .modal-cta a:active{color:var(--brand-900)}
+  .modal-card .btn{margin-top:1.7rem}
+  .modal-foot{margin-top:1.25rem;font-size:.74rem;color:var(--muted);opacity:.85}
+  .modal-close{
+    position:absolute;top:.6rem;right:.6rem;width:2.3rem;height:2.3rem;border-radius:50%;
+    border:0;cursor:pointer;background:transparent;color:var(--muted);
+    font-size:1.6rem;line-height:1;display:flex;align-items:center;justify-content:center;
+    transition:transform .3s var(--ease), background-color .3s var(--ease), color .3s var(--ease);
+  }
+  .modal-close:hover{background:rgba(158,90,99,.12);color:var(--accent);transform:rotate(90deg)}
+  .modal-close:focus-visible{outline:2px solid var(--trim);outline-offset:2px}
+  .modal-lang{position:absolute;top:1rem;left:1.15rem;display:flex;align-items:center;gap:.3rem;font-family:var(--font-body);font-size:.72rem;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+  .modal-lang button{background:transparent;border:0;cursor:pointer;color:var(--muted);font:inherit;letter-spacing:inherit;padding:.1rem .15rem;transition:color .25s var(--ease)}
+  .modal-lang button:hover{color:var(--accent)}
+  .modal-lang button.is-active{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+  .modal-lang button:focus-visible{outline:2px solid var(--trim);outline-offset:2px;border-radius:2px}
+  .modal-lang span{opacity:.5}
+  body.modal-open{overflow:hidden}
+  /* Short landscape: tighten the card so the notice + buttons fit without scrolling.
+     Placed after the base modal rules so it wins on equal specificity. */
+  @media (orientation:landscape) and (max-height:480px){
+    .modal-overlay{padding:.5rem;align-items:safe center}
+    .modal-card{padding:.7rem 1.35rem;max-height:calc(100svh - 1rem)}
+    .modal-card .eyebrow{margin-bottom:.15rem;font-size:.64rem}
+    .modal-title{font-size:1.12rem}
+    .modal-rule{margin:.35rem auto .45rem}
+    .modal-body{font-size:.8rem;line-height:1.35}
+    .modal-cta{margin-top:.45rem;font-size:.78rem;line-height:1.4}
+    .modal-card .btn{margin-top:.55rem;padding:.6rem 1.3rem}
+    .modal-foot{margin-top:.4rem;font-size:.68rem;line-height:1.3}
+    .modal-close{top:.3rem;right:.3rem;width:2rem;height:2rem;font-size:1.4rem}
+    .modal-lang{top:.65rem;left:.9rem}
+  }
+  @keyframes overlayIn{from{opacity:0}to{opacity:1}}
+  @keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .modal-overlay,.modal-card{animation:none}
+    .modal-close{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PROSPECT SAMPLE MODE: DISCLAIMER MODAL ============
+     Required on every cold-outreach sample. Delete this block (plus its CSS
+     and the modal IIFE at the bottom) for a Client Mode build.
+     Rendered visible by default so the notice still shows if JS fails. -->
+<div class="modal-overlay" id="sampleModal" role="dialog" aria-modal="true" aria-labelledby="sm-title" aria-describedby="sm-body">
+  <div class="modal-card">
+    <button class="modal-close" id="sm-close" type="button" aria-label="Close">&times;</button>
+    <div class="modal-lang" role="group" aria-label="Language / Langue">
+      <button type="button" data-setlang="en" class="is-active">EN</button>
+      <span aria-hidden="true">/</span>
+      <button type="button" data-setlang="fr">FR</button>
+    </div>
+    <span class="eyebrow" data-en="Design preview" data-fr="Aperçu">Design preview</span>
+    <h2 class="modal-title" id="sm-title" data-en="You're viewing a sample" data-fr="Vous consultez un exemple">You're viewing a sample</h2>
+    <div class="pole-rule modal-rule"></div>
+    <p class="modal-body" id="sm-body" data-en="This is a design preview of a website for <strong>Coiffure 3</strong>, created by <strong>Parallex Web Studio</strong>. It is not the salon's official or live website — just an example of what their online presence could look like." data-fr="Ceci est un aperçu de site web conçu pour <strong>Coiffure 3</strong> par <strong>Parallex Web Studio</strong>. Ce n’est ni le site officiel ni le site en ligne du salon — simplement un exemple de ce à quoi leur présence en ligne pourrait ressembler.">This is a design preview of a website for <strong>Coiffure 3</strong>, created by <strong>Parallex Web Studio</strong>. It is not the salon's official or live website — just an example of what their online presence could look like.</p>
+    <p class="modal-cta" data-en="<strong>Make your site a reality.</strong> Write to us at <a href='mailto:contact@parallexweb.com'>contact@parallexweb.com</a>, or visit us at <a href='https://parallexweb.com' target='_blank' rel='noopener'>parallexweb.com</a>." data-fr="<strong>Donnez vie à votre site.</strong> Écrivez-nous à <a href='mailto:contact@parallexweb.com'>contact@parallexweb.com</a>, ou visitez <a href='https://parallexweb.com' target='_blank' rel='noopener'>parallexweb.com</a>."><strong>Make your site a reality.</strong> Write to us at <a href='mailto:contact@parallexweb.com'>contact@parallexweb.com</a>, or visit us at <a href='https://parallexweb.com' target='_blank' rel='noopener'>parallexweb.com</a>.</p>
+    <button class="btn btn-primary" id="sm-ok" type="button"><span class="dot"></span><span data-en="View the preview" data-fr="Voir l'aperçu">View the preview</span></button>
+    <p class="modal-foot" data-en="Not affiliated with or endorsed by Coiffure 3." data-fr="Sans affiliation ni approbation de Coiffure 3.">Not affiliated with or endorsed by Coiffure 3.</p>
+  </div>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <nav class="nav-links desktop" id="navmenu" aria-label="Primary">
+      <a class="nav-link" href="#services" data-en="Services" data-fr="Services">Services</a>
+      <a class="nav-link" href="#shop" data-en="The Salon" data-fr="Le Salon">The Salon</a>
+      <a class="nav-link" href="#visit" data-en="Visit" data-fr="Nous trouver">Visit</a>
+      <a class="nav-link mobile-only" href="tel:+15144897979" data-en="Book" data-fr="Réserver">Book</a>
+    </nav>
+
+    <!-- Supplied logo file, unmodified; rendered white via CSS filter:invert(1). -->
+    <a class="brand" href="#top" aria-label="Coiffure 3 — home">
+      <img src="logo.png" alt="Coiffure 3" />
+    </a>
+
+    <div class="nav-actions">
+      <a class="nav-link book-desktop" href="tel:+15144897979" data-en="Book" data-fr="Réserver">Book</a>
+      <button class="lang" id="lang" aria-label="Switch to French"><span id="lang-label">FR</span></button>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-controls="navmenu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-img">
+    <!-- HERO-08 · engin akyurt / Unsplash — framed so the client's head and the
+         pinned hair sit in the upper-left third, clear of the headline. -->
+    <img src="https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?auto=format&fit=crop&w=1920&q=80"
+         alt="A stylist pinning a client's long hair into a set of curls in a bright salon"
+         style="object-position:32% 38%" />
+  </div>
+  <!-- White logotype at the top of the hero (decorative repeat of the nav mark) -->
+  <div class="hero-logo"><div class="wrap"><img src="logo.png" alt="" aria-hidden="true" /></div></div>
+  <!-- PROSPECT SAMPLE MODE: remove for Client Mode -->
+  <div class="stamp" role="note" aria-label="Sample site — design preview" data-en="SAMPLE<br>SITE" data-fr="APERÇU">SAMPLE<br>SITE</div>
+  <div class="wrap hero-content">
+    <div class="hero-eyebrow">
+      <span class="line"></span>
+      <span class="eyebrow on-dark" data-en="NDG · Sherbrooke West" data-fr="NDG · Sherbrooke Ouest">NDG · Sherbrooke West</span>
+    </div>
+    <!-- 3-line headline — plain / italic / plain. EN and FR are both three lines
+         with a single-word third line, so the two languages stack identically
+         on portrait phones. -->
+    <h1>
+      <span class="l1" data-en="HAIR THAT" data-fr="DES CHEVEUX">HAIR THAT</span>
+      <span class="l2" data-en="feels like" data-fr="qui vous">feels like</span>
+      <span class="l3" data-en="<span class='w'>YOU</span>" data-fr="<span class='w'>RESSEMBLENT</span>"><span class="w">YOU</span></span>
+    </h1>
+    <p class="hero-sub" data-en="Cut, colour and everyday care for every kind of hair — a neighbourhood salon on Sherbrooke West, in Notre-Dame-de-Grâce." data-fr="Coupe, couleur et soins au quotidien pour tous les types de cheveux — un salon de quartier sur Sherbrooke Ouest, dans Notre-Dame-de-Grâce.">Cut, colour and everyday care for every kind of hair — a neighbourhood salon on Sherbrooke West, in Notre-Dame-de-Grâce.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="tel:+15144897979"><span class="dot"></span><span data-en="Call to book" data-fr="Réserver par téléphone">Call to book</span></a>
+      <a class="btn btn-ghost" href="#services" data-en="See services" data-fr="Voir les services">See services</a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span class="ln"></span><span data-en="Scroll" data-fr="Défiler">Scroll</span></div>
+</section>
+
+<!-- ============ INTRO ============ -->
+<section class="section intro">
+  <div class="wrap">
+    <div class="inner">
+      <span class="eyebrow reveal" data-en="Notre-Dame-de-Grâce, Montreal" data-fr="Notre-Dame-de-Grâce, Montréal">Notre-Dame-de-Grâce, Montreal</span>
+      <h2 class="reveal d1" data-en="The chair, the conversation, the cut." data-fr="Le fauteuil, la conversation, la coupe.">The chair, the conversation, the cut.</h2>
+      <p class="reveal d2" data-en="Coiffure 3 is a full-service hair salon in Notre-Dame-de-Grâce. Cuts, colour, blow-dries and treatments for women, men and kids — starting with a consultation, so the result suits your hair and the way you actually wear it. Call ahead to book your spot." data-fr="Coiffure 3 est un salon de coiffure complet dans Notre-Dame-de-Grâce. Coupes, couleur, brushings et soins pour femmes, hommes et enfants — en commençant par une consultation, pour que le résultat convienne à vos cheveux et à votre quotidien. Appelez pour réserver votre place.">Coiffure 3 is a full-service hair salon in Notre-Dame-de-Grâce. Cuts, colour, blow-dries and treatments for women, men and kids — starting with a consultation, so the result suits your hair and the way you actually wear it. Call ahead to book your spot.</p>
+      <div class="reveal d2">
+        <a class="btn btn-primary" href="tel:+15144897979"><span class="dot"></span><span data-en="Call 514-489-7979" data-fr="Appeler le 514-489-7979">Call 514-489-7979</span></a>
+      </div>
+      <div class="pole-wrap reveal d3"><div class="pole-rule"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IMAGE BAND 1 ============ -->
+<section class="band">
+  <!-- HERO-15 · engin akyurt / Unsplash — texture, no face. -->
+  <img src="https://images.unsplash.com/photo-1583919976579-9ec4a0051fe6?auto=format&fit=crop&w=1920&q=80"
+       alt="Close-up of long, freshly cut hair being trimmed"
+       style="object-position:58% 45%" />
+  <div class="band-quote"><span class="script" data-en="Precision &amp; polish" data-fr="Précision et finition">Precision &amp; polish</span></div>
+</section>
+
+<!-- ============ SERVICES ============ -->
+<section class="section services" id="services">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow reveal" data-en="What we do" data-fr="Ce que nous faisons">What we do</span>
+      <h2 class="reveal d1" data-en="Services" data-fr="Services">Services</h2>
+    </div>
+
+    <div class="menu">
+      <div class="item reveal">
+        <div class="row"><h3 data-en="Cut &amp; Style" data-fr="Coupe et mise en forme">Cut &amp; Style</h3><span class="tag" data-en="Signature" data-fr="Signature">Signature</span></div>
+        <p data-en="Consultation, shampoo, precision cut and a finish you can repeat at home." data-fr="Consultation, shampoing, coupe précise et une finition que vous pourrez refaire à la maison.">Consultation, shampoo, precision cut and a finish you can repeat at home.</p>
+      </div>
+      <div class="item reveal d1">
+        <div class="row"><h3 data-en="Colour &amp; Balayage" data-fr="Couleur et balayage">Colour &amp; Balayage</h3><span class="tag" data-en="By appointment" data-fr="Sur rendez-vous">By appointment</span></div>
+        <p data-en="Single-process colour, highlights, balayage and root touch-ups." data-fr="Couleur uniforme, mèches, balayage et retouches de racines.">Single-process colour, highlights, balayage and root touch-ups.</p>
+      </div>
+      <div class="item reveal">
+        <div class="row"><h3 data-en="Blow-Dry &amp; Styling" data-fr="Brushing et coiffage">Blow-Dry &amp; Styling</h3></div>
+        <p data-en="Smooth blowouts, soft waves or curls — on its own or after a cut." data-fr="Brushings lisses, boucles ou ondulations souples — seul ou après une coupe.">Smooth blowouts, soft waves or curls — on its own or after a cut.</p>
+      </div>
+      <div class="item reveal d1">
+        <div class="row"><h3 data-en="Updos &amp; Occasions" data-fr="Chignons et événements">Updos &amp; Occasions</h3></div>
+        <p data-en="Pinned and styled looks for weddings, parties and photos." data-fr="Coiffures montées et attachées pour mariages, fêtes et séances photo.">Pinned and styled looks for weddings, parties and photos.</p>
+      </div>
+      <div class="item reveal">
+        <div class="row"><h3 data-en="Treatments &amp; Care" data-fr="Soins et traitements">Treatments &amp; Care</h3></div>
+        <p data-en="Deep conditioning, gloss and smoothing treatments for tired or coloured hair." data-fr="Soins profonds, gloss et traitements lissants pour cheveux fatigués ou colorés.">Deep conditioning, gloss and smoothing treatments for tired or coloured hair.</p>
+      </div>
+      <div class="item reveal d1">
+        <div class="row"><h3 data-en="Men's &amp; Kids' Cuts" data-fr="Coupes hommes et enfants">Men's &amp; Kids' Cuts</h3></div>
+        <p data-en="Clipper work, fades and quick trims — the whole family in one chair." data-fr="Tondeuse, dégradés et coupes rapides — toute la famille dans le même fauteuil.">Clipper work, fades and quick trims — the whole family in one chair.</p>
+      </div>
+    </div>
+
+    <p class="menu-note reveal" data-en="Services and timing vary with hair type and length. Call 514-489-7979 for pricing and to book." data-fr="Les services et leur durée varient selon le type et la longueur des cheveux. Appelez le 514-489-7979 pour les tarifs et pour réserver.">Services and timing vary with hair type and length. Call 514-489-7979 for pricing and to book.</p>
+  </div>
+</section>
+
+<!-- ============ IMAGE BAND 2 ============ -->
+<section class="band">
+  <!-- P2-TEXTURE-20 · Ionela Mat / Unsplash — colour work, faces away. -->
+  <img src="https://images.unsplash.com/photo-1707979577466-2d6109c68a45?auto=format&fit=crop&w=1920&q=80"
+       alt="Two stylists applying colour to a client's long hair in a salon"
+       style="object-position:48% 58%" />
+  <div class="band-quote"><span class="script" data-en="Made for your hair" data-fr="Pensé pour vos cheveux">Made for your hair</span></div>
+</section>
+
+<!-- ============ EXPERIENCE / PILLARS ============ -->
+<section class="section exp" id="shop">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow reveal" data-en="Inside the salon" data-fr="Dans le salon">Inside the salon</span>
+      <h2 class="reveal d1" data-en="Why Coiffure 3" data-fr="Pourquoi Coiffure 3">Why Coiffure 3</h2>
+    </div>
+
+    <div class="pillars">
+      <article class="pillar reveal">
+        <div class="ph">
+          <!-- HERO-19 · Giorgio Trovato / Unsplash -->
+          <img src="https://images.unsplash.com/photo-1629397685944-7073f5589754?auto=format&fit=crop&w=900&q=80"
+               alt="A stylist curling a client's blonde, highlighted hair"
+               style="object-position:48% 48%" />
+          <span class="num display">01</span>
+        </div>
+        <div class="body">
+          <h3 data-en="A consultation first" data-fr="Une consultation d’abord">A consultation first</h3>
+          <p data-en="We talk through your hair, your routine and how much time you want to spend on it — then we cut." data-fr="On discute de vos cheveux, de votre routine et du temps que vous voulez y consacrer — ensuite on coupe.">We talk through your hair, your routine and how much time you want to spend on it — then we cut.</p>
+        </div>
+      </article>
+      <article class="pillar reveal d1">
+        <div class="ph">
+          <!-- HERO-20 · Ionela Mat / Unsplash -->
+          <img src="https://images.unsplash.com/photo-1712213396688-c6f2d536671f?auto=format&fit=crop&w=900&q=80"
+               alt="Colour being painted onto sectioned hair with a tint brush and foils"
+               style="object-position:45% 50%" />
+          <span class="num display">02</span>
+        </div>
+        <div class="body">
+          <h3 data-en="Colour, done carefully" data-fr="Une couleur soignée">Colour, done carefully</h3>
+          <p data-en="Highlights, balayage and single-process colour, applied section by section and checked in good light." data-fr="Mèches, balayage et couleur uniforme, appliqués section par section et vérifiés à la bonne lumière.">Highlights, balayage and single-process colour, applied section by section and checked in good light.</p>
+        </div>
+      </article>
+      <article class="pillar reveal d2">
+        <div class="ph">
+          <!-- P1-FAMILY-09 · Chalo Garcia / Unsplash -->
+          <img src="https://images.unsplash.com/photo-1613966582880-80a7327b250f?auto=format&fit=crop&w=900&q=80"
+               alt="A client's hair being gathered and pinned into a style"
+               style="object-position:56% 45%" />
+          <span class="num display">03</span>
+        </div>
+        <div class="body">
+          <h3 data-en="Everyone's welcome" data-fr="Tout le monde est bienvenu">Everyone's welcome</h3>
+          <p data-en="Women, men and kids, every hair type and texture — including occasion styling when it matters." data-fr="Femmes, hommes et enfants, tous les types et toutes les textures — y compris les coiffures d’occasion.">Women, men and kids, every hair type and texture — including occasion styling when it matters.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<div class="pole-rule" style="border-radius:0"></div>
+<footer class="ft" id="visit">
+  <div class="wrap">
+    <div class="ft-top">
+      <div class="brandblock">
+        <!-- Same unmodified file, rendered white via .logo-white (filter:invert(1)) -->
+        <img class="ft-logo logo-white" src="logo.png" alt="Coiffure 3" />
+        <div class="tag" data-en="Hair salon · NDG, Montreal" data-fr="Salon de coiffure · NDG, Montréal">Hair salon · NDG, Montreal</div>
+        <p data-en="A neighbourhood salon on Sherbrooke West. Cut, colour and care — call to book your chair." data-fr="Un salon de quartier sur Sherbrooke Ouest. Coupe, couleur et soins — appelez pour réserver votre place.">A neighbourhood salon on Sherbrooke West. Cut, colour and care — call to book your chair.</p>
+      </div>
+
+      <div class="col">
+        <h4 data-en="Visit" data-fr="Nous trouver">Visit</h4>
+        <a class="addr" href="https://maps.google.com/?q=5702+Sherbrooke+St+W%2C+Montreal%2C+QC+H4A+1W8" target="_blank" rel="noopener" data-en="5702 Sherbrooke St W<br />Montreal, QC H4A 1W8" data-fr="5702, rue Sherbrooke Ouest<br />Montréal, QC H4A 1W8">5702 Sherbrooke St W<br />Montreal, QC H4A 1W8</a>
+        <a href="https://maps.google.com/?q=5702+Sherbrooke+St+W%2C+Montreal%2C+QC+H4A+1W8" target="_blank" rel="noopener" data-en="Get directions →" data-fr="Itinéraire →">Get directions →</a>
+        <div class="ft-map">
+          <iframe title="Map to Coiffure 3" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            src="https://maps.google.com/maps?q=5702+Sherbrooke+St+W%2C+Montreal%2C+QC+H4A+1W8&t=&z=15&ie=UTF8&iwloc=&output=embed"></iframe>
+        </div>
+      </div>
+
+      <div class="col">
+        <h4 data-en="Hours" data-fr="Heures">Hours</h4>
+        <dl class="hours">
+          <div>
+            <dt data-en="Tue – Wed" data-fr="Mar – Mer">Tue – Wed</dt>
+            <dd data-en="10 a.m. – 6 p.m." data-fr="10 h – 18 h">10 a.m. – 6 p.m.</dd>
+          </div>
+          <div>
+            <dt data-en="Thu – Fri" data-fr="Jeu – Ven">Thu – Fri</dt>
+            <dd data-en="10 a.m. – 7 p.m." data-fr="10 h – 19 h">10 a.m. – 7 p.m.</dd>
+          </div>
+          <div>
+            <dt data-en="Saturday" data-fr="Samedi">Saturday</dt>
+            <dd data-en="9 a.m. – 5 p.m." data-fr="9 h – 17 h">9 a.m. – 5 p.m.</dd>
+          </div>
+          <div>
+            <dt data-en="Sun – Mon" data-fr="Dim – Lun">Sun – Mon</dt>
+            <dd class="closed" data-en="Closed" data-fr="Fermé">Closed</dd>
+          </div>
+        </dl>
+
+        <h4 class="h4-sp" data-en="Book" data-fr="Réserver">Book</h4>
+        <a href="tel:+15144897979">514-489-7979</a>
+        <a class="btn btn-primary" href="tel:+15144897979"><span class="dot"></span><span data-en="Call to book" data-fr="Réserver">Call to book</span></a>
+      </div>
+    </div>
+
+    <div class="ft-bottom">
+      <span data-en="© 2026 Coiffure 3 · Montreal, QC" data-fr="© 2026 Coiffure 3 · Montréal, QC">© 2026 Coiffure 3 · Montreal, QC</span>
+      <!-- PROSPECT SAMPLE MODE: persistent secondary disclaimer — keep on every sample -->
+      <span class="preview" data-en="Design preview by Parallex Web Studio — not an official website." data-fr="Aperçu conçu par Parallex Web Studio — site non officiel.">Design preview by Parallex Web Studio — not an official website.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ---------- nav scroll state + brand cross-fade ----------
+     The nav logotype duplicates the large hero mark, so it stays hidden while
+     that mark is on screen and fades in only once the mark has passed behind the
+     nav — and fades back out on the way up. Measured against the live nav height
+     because the bar shrinks in its scrolled state, and skipped entirely where the
+     hero mark is display:none (short landscape), so the nav mark always shows. */
+  const nav = document.getElementById('nav');
+  const brand = document.querySelector('.brand');
+  const heroLogo = document.querySelector('.hero-logo');
+  function syncBrand(){
+    if(!brand) return;
+    let heroMarkVisible = false;
+    if(heroLogo && heroLogo.offsetParent !== null){
+      const r = heroLogo.getBoundingClientRect();
+      heroMarkVisible = r.bottom > nav.offsetHeight + 4 && r.top < window.innerHeight;
+    }
+    brand.classList.toggle('brand-hidden', heroMarkVisible);
+  }
+  const onScroll = () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+    syncBrand();
+  };
+  onScroll();
+  if(brand) requestAnimationFrame(() => brand.classList.add('brand-anim'));
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+
+  /* ---------- mobile menu ---------- */
+  const menuBtn = document.getElementById('menuBtn');
+  const navmenu = document.getElementById('navmenu');
+  menuBtn.addEventListener('click', () => {
+    const open = navmenu.classList.toggle('open');
+    menuBtn.classList.toggle('open', open);
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  navmenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navmenu.classList.remove('open'); menuBtn.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', false);
+  }));
+
+  /* ---------- language toggle (EN default / FR) ----------
+     Every translatable node carries data-en + data-fr; innerHTML is swapped so
+     inline markup (<br>, <strong>, <span class="w">, links) survives the switch. */
+  let lang = 'en';
+  const langBtn = document.getElementById('lang');
+  const langLabel = document.getElementById('lang-label');
+  function setLang(l){
+    lang = l;
+    document.documentElement.lang = l;
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const v = el.getAttribute('data-' + l);
+      if (v !== null) el.innerHTML = v;
+    });
+    langLabel.textContent = l === 'en' ? 'FR' : 'EN';
+    langBtn.setAttribute('aria-label', l === 'en' ? 'Switch to French' : 'Passer en anglais');
+  }
+  langBtn.addEventListener('click', () => setLang(lang === 'en' ? 'fr' : 'en'));
+
+  /* ---------- scroll reveal ---------- */
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:0.14, rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  /* ---------- PROSPECT SAMPLE MODE: disclaimer modal (shows every visit) ----------
+     Closeable four ways: dismiss button, ×, Esc, backdrop click. Focus moves in
+     and is trapped, then restored on close. Delete for a Client Mode build. */
+  (function(){
+    const modal = document.getElementById('sampleModal');
+    if(!modal) return;
+    let lastFocus = null;
+    function closeModal(){
+      modal.hidden = true;
+      document.body.classList.remove('modal-open');
+      if(lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function openModal(){
+      lastFocus = document.activeElement;
+      document.body.classList.add('modal-open');
+      modal.hidden = false;
+      const ok = document.getElementById('sm-ok');
+      if(ok) ok.focus({preventScroll:true});
+    }
+    document.getElementById('sm-close').addEventListener('click', closeModal);
+    document.getElementById('sm-ok').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if(modal.hidden) return;
+      if(e.key === 'Escape'){ closeModal(); return; }
+      if(e.key === 'Tab'){
+        const f = Array.from(modal.querySelectorAll('button')).filter(el => !el.disabled);
+        if(!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      }
+    });
+    modal.querySelectorAll('.modal-lang button').forEach(b => {
+      b.addEventListener('click', () => {
+        setLang(b.dataset.setlang);
+        modal.querySelectorAll('.modal-lang button').forEach(x => x.classList.toggle('is-active', x === b));
+      });
+    });
+    openModal();
+  })();
+</script>
+</body>
+</html>

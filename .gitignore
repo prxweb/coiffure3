@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Secrets — never commit API keys
+.env
+
+# Dev server runtime
+.devport
+.serve.log
+
+# QA artifacts
+temporary screenshots/
+
+# Photo-selection scratch (build-time only, not part of the site)
+picker.html
+.photo-candidates.json
+
+# Internal playbooks — this is a PUBLIC repo. RESKIN.md's own step 8 says to keep
+# the playbook out of a public prospect clone. Remove these lines only if you
+# actually intend to publish the studio's build rules and prospect economics.
+CLAUDE.md
+RESKIN.md
